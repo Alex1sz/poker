@@ -4,14 +4,15 @@ require "poker_eval"
 RSpec.describe Hand do
 
   describe "One Pair" do
+
     context "when one pair" do
       before do
         cards = ["2S", "2D", "5S", "7D", "9D"]
         @hand = Hand.new(cards)
       end
 
-      it "#has_two_same? returns true " do
-        expect(@hand.has_two_same?).to be true
+      it "#has_same?(2) returns true" do
+        expect(@hand.has_same?(2)).to be true
       end
 
       it "#rank_value is 1" do
@@ -20,13 +21,11 @@ RSpec.describe Hand do
     end
 
     context "when no pairs" do
-      before do
+
+      it "#has_same?(2) returns false" do
         cards = ["2S", "4D", "5S", "6S", "8D"]
         @hand = Hand.new(cards)
-      end
-
-      it "#has_two_same? returns false" do
-        expect(@hand.has_two_same?). to be false
+        expect(@hand.has_same?(2)).to be false
       end
     end
   end
@@ -48,13 +47,12 @@ RSpec.describe Hand do
       end
     end
 
-    context "when there are not two pairs" do
-      before do
+    context "when it is not Two Pairs" do
+
+      it "#two_pairs? returns false" do
         cards = ["2S", "4D", "5S", "6S", "8D"]
         @hand = Hand.new(cards)
-      end
 
-      it "#two_pairs? returns false" do 
         expect(@hand.two_pairs?).to be false
       end
     end
@@ -68,8 +66,8 @@ RSpec.describe Hand do
         @hand = Hand.new(cards)
       end
 
-      it "#has_three_same? returns true" do 
-        expect(@hand.has_three_same?).to be true
+      it "#has_same?(3) returns true" do
+        expect(@hand.has_same?(3)).to be true
       end
 
       it "#rank_value is 3" do
@@ -77,14 +75,12 @@ RSpec.describe Hand do
       end
     end
 
-    context "when cards do not make three of kind" do 
-      before do
+    context "when cards do not make three of kind" do
+
+      it "#has_three_same? returns false" do
         cards = ["2S", "2D", "5S", "7D", "9D"]
         @hand = Hand.new(cards)
-      end
-
-      it "#has_three_same? returns false" do 
-        expect(@hand.has_three_same?).to be false 
+        expect(@hand.has_same?(3)).to be false
       end
     end
   end
@@ -109,12 +105,10 @@ RSpec.describe Hand do
 
     context "when 5 cards are not same suit" do
 
-      before do
+      it "#flush returns false" do
         cards = ["2S", "2D", "5S", "7D", "9D"]
         @hand = Hand.new(cards)
-      end
 
-      it "#flush returns false" do 
         expect(@hand.flush).to be false 
       end
     end
@@ -140,12 +134,10 @@ RSpec.describe Hand do
 
     context "when the hand is not straight" do
 
-      before do
+      it "straight? returns false" do
         cards = ["2S", "4D", "5S", "6S", "8D"]
         @hand = Hand.new(cards)
-      end
 
-      it "straight? returns false" do 
         expect(@hand.straight?).to be false
       end
     end
@@ -154,6 +146,7 @@ RSpec.describe Hand do
   describe "Full House" do
 
     context "when the cards make a full house" do
+
       before do
         cards = ["2S", "2S", "2D", "3S", "3D"]
         @hand = Hand.new(cards)
@@ -168,27 +161,28 @@ RSpec.describe Hand do
       end
     end
 
-    context "when the cards do not make a full house" do 
-      before do
+    context "when the cards do not make a full house" do
+
+      it "#full_house returns false" do
         cards = ["2S", "2S", "2D", "6S", "8S"]
         @hand = Hand.new(cards)
-      end
 
-      it "#full_house returns false" do 
         expect(@hand.full_house?).to be false
       end
     end
   end
 
   describe "Four of a Kind" do
-    context "when the cards make 4 of a kind" do 
+
+    context "when the cards make 4 of a kind" do
+
       before do
         cards = ["2S", "2S", "2D", "2D" "5S"]
         @hand = Hand.new(cards)
       end
 
-      it "#has_four_same? returns true" do
-        expect(@hand.has_four_same?).to be true
+      it "#has_same?(4) returns true" do
+        expect(@hand.has_same?(4)).to be true
       end
 
       it "#rank_value is 7" do
@@ -201,19 +195,18 @@ RSpec.describe Hand do
     end
 
     context "when the cards do not make 4 of a kind" do
-      before do
-        cards = ["2S", "3D", "4S", "5D", "6D"] 
-        @hand = Hand.new(cards)
-      end
-
+      
       it "#has_four_same? returns false" do
-        expect(@hand.has_four_same?).to be false
+        cards = ["2S", "3D", "4S", "5D", "6D"]
+        @hand = Hand.new(cards)
+
+        expect(@hand.has_same?(4)).to be false
       end
     end
   end
 
-  describe "Straight Flush" do 
-    context "when cards make a Straight Flush" do 
+  describe "Straight Flush" do
+    context "when cards make a Straight Flush" do
       before do
         cards = ["2S", "3S", "4S", "5S", "6S"]
         @hand = Hand.new(cards)
@@ -227,18 +220,17 @@ RSpec.describe Hand do
         expect(@hand.rank).to eq( { :type => :straight_flush } )
       end
 
-      it "#rank_value is 8" do 
+      it "#rank_value is 8" do
         expect(@hand.rank_value).to eq(8)
       end
     end
 
     context "when cards do not make a straight flush" do
-      before do
-        cards = ["2S", "2D", "5S", "7D", "9D"]
-        @hand = Hand.new(cards)
-      end
 
       it "#straight_flush returns false" do
+        cards = ["2S", "2D", "5S", "7D", "9D"]
+        @hand = Hand.new(cards)
+
         expect(@hand.straight_flush).to be false
       end
     end
@@ -246,16 +238,16 @@ RSpec.describe Hand do
 
   describe "Royal Flush" do
     context "when cards make a Royal Flush" do
-      before do 
+      before do
         cards = ["TS", "JS", "QS", "KS", "AS"]
         @hand = Hand.new(cards)
       end
 
-      it "#royal_flush returns true" do 
+      it "#royal_flush returns true" do
         expect(@hand.royal_flush).to be true
       end
 
-      it "has #rank royal flush" do 
+      it "has #rank royal flush" do
         expect(@hand.rank).to eq( { :type => :royal_flush } )
       end
 
@@ -265,12 +257,11 @@ RSpec.describe Hand do
     end
 
     context "when cards would make make a royal flush except do not in same suit" do
-      before do
+     
+      it "#royal_flush returns false" do
         cards = ["10D", "JS", "QS", "KD", "AS"]
         @hand = Hand.new(cards)
-      end
 
-      it "#royal_flush returns false" do 
         expect(@hand.royal_flush).to be false
       end
     end

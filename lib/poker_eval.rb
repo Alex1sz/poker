@@ -28,7 +28,7 @@ module Poker
     elsif h1.rank_value == h2.rank_value && h1.tiebreaker > h2.tiebreaker
       puts p1_wins_tie
     elsif h1.rank_value == h2.rank_value && h1.tiebreaker < h2.tiebreaker
-      puts 
+      puts p2_wins_tie
     end
   end
 end
@@ -96,22 +96,22 @@ class Hand
     if royal_flush
       { :type => :royal_flush }
     elsif straight_flush
-      { :type => :straight_flush }
-    elsif has_four_same?
+     { :type => :straight_flush }
+    elsif has_same?(4)
       { :type => :four_of_a_kind }
     elsif full_house?
       { :type => :full_house }
     elsif straight?
       { :type => :straight }
     elsif flush
-      { :type => :flush }
-    elsif has_three_same?
+     { :type => :flush }
+    elsif has_same?(3)
       { :type => :three_of_a_kind }
     elsif two_pairs?
       { :type => :two_pairs }
-    elsif has_two_same?
+    elsif has_same?(2)
       { :type => :one_pair }
-    elsif !has_two_same?
+    elsif !has_same?(2)
       { :type => :high_card }
     end
   end
@@ -139,24 +139,16 @@ class Hand
     cards_array.join(',')
   end
 
-  def has_four_same?
-    value_count.values.include?(4)
-  end
-
-  def has_three_same?
-    value_count.values.include?(3)
-  end
-
-  def has_two_same?
-    value_count.values.include?(2)
+  def has_same?(n)
+    value_count.values.include?(n)
   end
 
   def two_pairs?
-    collapsed_size == 2 && has_two_same?
+    collapsed_size == 2 && has_same?(2)
   end
 
   def full_house?
-    has_three_same? && has_two_same?
+    has_same?(3) && has_same?(2)
   end
 
   def flush
@@ -177,11 +169,7 @@ class Hand
   end
 
   def straight?
-    if consecutive_cards?
-      true
-    else
-      false
-    end
+    consecutive_cards?
   end
 
   def straight_flush
@@ -229,15 +217,15 @@ class Hand
   end
 
   def tiebreaker
-    if has_four_same?
+    if has_same?(4)
       self.repeated_values
     elsif full_house?
       self.repeated_values
-    elsif has_three_same?
+    elsif has_same?(3)
       self.repeated_values
-    elsif two_pairs? 
+    elsif two_pairs?
       self.repeated_values
-    elsif has_two_same?
+    elsif has_same?(2)
       self.repeated_values
     else
       high_card
