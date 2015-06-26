@@ -12,23 +12,31 @@
 
 module Poker
 
+  def self.handranks_tie?(h1, h2)
+    h1.rank_value == h2.rank_value
+  end
+
+  def self.evaluate_by_tiebreaker(h1, h2)
+    if h1.tiebreaker > h2.tiebreaker
+      puts "\n Wins by Tiebreaker: Player_1 H: #{h1} #{h1.rank} Tiebreaker: #{h1.tiebreaker} ..... Loser: P2 H: #{h2} #{h2.rank} Tiebreaker: #{h2.tiebreaker}"
+    else
+      puts "\n Wins by Tiebreaker: Player_2 H: #{h2} #{h2.rank} Tiebreaker: #{h2.tiebreaker} ..... Loser: P1 H: #{h1} #{h1.rank} Tiebreaker: #{h1.tiebreaker}"
+    end
+  end
+
+  def self.evaluate_by_handrank(h1, h2)
+    if h1.rank_value > h2.rank_value
+      puts "\n Winner: Player_1 H: #{h1} #{h1.rank} ..... Loser: P2 H: #{h2} #{h2.rank}"
+    else
+      puts "\n Winner: Player_2 H: #{h2} #{h2.rank} ..... Loser: P1 H: #{h1} #{h1.rank}"
+    end
+  end
+
   def self.winning_hand(h1, h2)
-
-    p1_wins = "\n Winner: Player_1 H: #{h1} #{h1.rank} \n Loser: P2 H: #{h2} #{h2.rank}"
-    p2_wins = "\n Winner: Player_2 H: #{h2} #{h2.rank} \n Loser: P1 H: #{h1} #{h1.rank}"
-    p1_wins_tie = "\n Wins by Tiebreaker: Player_1 H: #{h1} #{h1.rank} \n Loser: P2 H: #{h2} #{h2.rank}"
-    p2_wins_tie = "\n Wins by Tiebreaker: Player_2 H: #{h2} #{h2.rank} \n Loser: P1 #{h1} #{h1.rank}"
-
-    if h1.empty? || h2.empty?
-      0
-    elsif h1.rank_value > h2.rank_value
-      puts p1_wins
-    elsif h2.rank_value > h1.rank_value
-      puts p2_wins
-    elsif h1.rank_value == h2.rank_value && h1.tiebreaker > h2.tiebreaker
-      puts p1_wins_tie
-    elsif h1.rank_value == h2.rank_value && h1.tiebreaker < h2.tiebreaker
-      puts p2_wins_tie
+    if handranks_tie?(h1, h2)
+      evaluate_by_tiebreaker(h1, h2)
+    else
+      evaluate_by_handrank(h1, h2)
     end
   end
 end
@@ -92,27 +100,23 @@ class Hand
     @cards = cards.map { |card| card.is_a?(Card) ? card : Card.new(card) }
   end
 
+  HAND_RANKS = [
+    { :type => :royal_flush, hand_has?: ->(hand){ hand.royal_flush } },
+    { :type => :straight_flush, hand_has?: ->(hand){ hand.straight_flush } },
+    { :type => :four_of_a_kind, hand_has?: ->(hand){ hand.has_same?(4) } },
+    { :type => :full_house, hand_has?: ->(hand){ hand.full_house? } },
+    { :type => :straight, hand_has?: ->(hand){ hand.straight? } },
+    { :type => :flush, hand_has?: ->(hand){ hand.flush } },
+    { :type => :three_of_a_kind, hand_has?: ->(hand){ hand.has_same?(3) } },
+    { :type => :two_pairs, hand_has?: ->(hand){ hand.collapsed_size == 2 && hand.has_same?(2) } },
+    { :type => :one_pair, hand_has?: ->(hand){ hand.has_same?(2) } },
+    { :type => :high_card, hand_has?: ->(hand){ true } }
+  ]
+
   def rank
-    if royal_flush
-      { :type => :royal_flush }
-    elsif straight_flush
-     { :type => :straight_flush }
-    elsif has_same?(4)
-      { :type => :four_of_a_kind }
-    elsif full_house?
-      { :type => :full_house }
-    elsif straight?
-      { :type => :straight }
-    elsif flush
-     { :type => :flush }
-    elsif has_same?(3)
-      { :type => :three_of_a_kind }
-    elsif two_pairs?
-      { :type => :two_pairs }
-    elsif has_same?(2)
-      { :type => :one_pair }
-    elsif !has_same?(2)
-      { :type => :high_card }
+    unless empty?
+      hand = self
+      rank = HAND_RANKS.find { |rank| rank[:hand_has?].call(hand) }.select { |k, v| k == :type }
     end
   end
 
@@ -217,16 +221,8 @@ class Hand
   end
 
   def tiebreaker
-    if has_same?(4)
-      self.repeated_values
-    elsif full_house?
-      self.repeated_values
-    elsif has_same?(3)
-      self.repeated_values
-    elsif two_pairs?
-      self.repeated_values
-    elsif has_same?(2)
-      self.repeated_values
+    if rank_value >= 1
+      repeated_values
     else
       high_card
     end
@@ -254,3 +250,4 @@ f = File.open('./poker.txt').each_line do |line|
   end
   puts f
   puts "Player_1 Wins: #{@player_one_wins} ... Player_2 Wins: #{@player_two_wins}"
+
