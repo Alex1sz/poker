@@ -101,16 +101,16 @@ class Hand
   end
 
   HAND_RANKS = [
-    { :type => :royal_flush, hand_has?: ->(hand){ hand.royal_flush } },
-    { :type => :straight_flush, hand_has?: ->(hand){ hand.straight_flush } },
-    { :type => :four_of_a_kind, hand_has?: ->(hand){ hand.has_same?(4) } },
-    { :type => :full_house, hand_has?: ->(hand){ hand.full_house? } },
-    { :type => :straight, hand_has?: ->(hand){ hand.straight? } },
-    { :type => :flush, hand_has?: ->(hand){ hand.flush } },
+    { :type => :royal_flush,     hand_has?: ->(hand){ hand.royal_flush } },
+    { :type => :straight_flush,  hand_has?: ->(hand){ hand.straight_flush } },
+    { :type => :four_of_a_kind,  hand_has?: ->(hand){ hand.has_same?(4) } },
+    { :type => :full_house,      hand_has?: ->(hand){ hand.full_house? } },
+    { :type => :straight,        hand_has?: ->(hand){ hand.straight? } },
+    { :type => :flush,           hand_has?: ->(hand){ hand.flush } },
     { :type => :three_of_a_kind, hand_has?: ->(hand){ hand.has_same?(3) } },
-    { :type => :two_pairs, hand_has?: ->(hand){ hand.collapsed_size == 2 && hand.has_same?(2) } },
-    { :type => :one_pair, hand_has?: ->(hand){ hand.has_same?(2) } },
-    { :type => :high_card, hand_has?: ->(hand){ true } }
+    { :type => :two_pairs,       hand_has?: ->(hand){ hand.collapsed_size == 2 && hand.has_same?(2) } },
+    { :type => :one_pair,        hand_has?: ->(hand){ hand.has_same?(2) } },
+    { :type => :high_card,       hand_has?: ->(hand){ true } }
   ]
 
   def rank
